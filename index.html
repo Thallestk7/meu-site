@@ -12,7 +12,6 @@
     :root {
       --bg: #eef1f5;
       --panel: #ffffff;
-      --panel-2: #f8fafc;
       --line: #d8dee7;
       --text: #1f2937;
       --muted: #6b7280;
@@ -20,22 +19,19 @@
       --primary-soft: rgba(37, 99, 235, 0.16);
       --search: rgba(250, 204, 21, 0.28);
       --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-      --radius: 12px;
-      --toolbar-h: 64px;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       background: var(--bg);
       color: var(--text);
-      font-family: Inter, Arial, Helvetica, sans-serif;
+      font-family: Inter, Arial, sans-serif;
     }
 
     body {
@@ -45,7 +41,7 @@
     }
 
     .toolbar {
-      min-height: var(--toolbar-h);
+      min-height: 64px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -53,8 +49,6 @@
       padding: 10px 14px;
       background: var(--panel);
       border-bottom: 1px solid var(--line);
-      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
-      z-index: 20;
     }
 
     .toolbar-group {
@@ -64,16 +58,10 @@
       flex-wrap: wrap;
     }
 
-    .toolbar-separator {
+    .sep {
       width: 1px;
       height: 28px;
       background: var(--line);
-      margin: 0 2px;
-    }
-
-    button,
-    input {
-      font: inherit;
     }
 
     .btn,
@@ -84,18 +72,13 @@
       border-radius: 10px;
       background: #fff;
       color: var(--text);
+      font: inherit;
     }
 
     .btn {
       min-width: 38px;
       padding: 0 12px;
       cursor: pointer;
-      transition: 0.18s ease;
-    }
-
-    .btn:hover {
-      border-color: #b8c2d1;
-      background: #f9fbff;
     }
 
     .btn:disabled {
@@ -106,7 +89,6 @@
     .input,
     .page-input {
       padding: 0 12px;
-      outline: none;
     }
 
     .input {
@@ -137,7 +119,6 @@
       border-radius: 14px;
       overflow: auto;
       position: relative;
-      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.03);
     }
 
     .viewer-center {
@@ -157,12 +138,10 @@
 
     #pdfCanvas {
       display: block;
-      background: #ffffff;
+      background: #fff;
       box-shadow: var(--shadow);
-      border-radius: 2px;
     }
 
-    #textLayer,
     #highlightLayer {
       position: absolute;
       left: 0;
@@ -174,7 +153,6 @@
       position: absolute;
       background: var(--search);
       border-radius: 2px;
-      pointer-events: none;
     }
 
     .highlight-box.active {
@@ -182,38 +160,32 @@
       outline: 1px solid rgba(37, 99, 235, 0.4);
     }
 
-    .loading,
-    .error,
-    .empty {
+    .overlay {
       position: absolute;
       inset: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 24px;
-      z-index: 10;
-      pointer-events: none;
+      z-index: 5;
     }
 
-    .message-card {
-      max-width: 520px;
+    .card {
+      max-width: 560px;
       background: rgba(255, 255, 255, 0.96);
       border: 1px solid var(--line);
       border-radius: 16px;
       box-shadow: var(--shadow);
       padding: 22px 20px;
-      pointer-events: auto;
     }
 
-    .message-title {
+    .title {
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 8px;
-      color: var(--text);
     }
 
-    .message-text {
+    .text {
       font-size: 14px;
       color: var(--muted);
       line-height: 1.55;
@@ -235,76 +207,43 @@
     }
 
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @media (max-width: 760px) {
-      .toolbar {
-        padding: 10px;
-      }
-
-      .input {
-        min-width: 150px;
-        flex: 1;
-      }
-
-      .viewer-shell {
-        padding: 10px;
-      }
-
-      .viewer-center {
-        padding: 10px;
-      }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div class="toolbar">
     <div class="toolbar-group">
-      <button class="btn" id="prevBtn" title="Página anterior">◀</button>
+      <button class="btn" id="prevBtn">◀</button>
       <span class="status" id="pageInfo">1 / 1</span>
-      <button class="btn" id="nextBtn" title="Próxima página">▶</button>
+      <button class="btn" id="nextBtn">▶</button>
     </div>
 
-    <div class="toolbar-separator"></div>
+    <div class="sep"></div>
 
     <div class="toolbar-group">
-      <button class="btn" id="zoomOutBtn" title="Diminuir zoom">-</button>
+      <button class="btn" id="zoomOutBtn">-</button>
       <span class="status" id="zoomInfo">100%</span>
-      <button class="btn" id="zoomInBtn" title="Aumentar zoom">+</button>
-      <button class="btn" id="fitWidthBtn" title="Ajustar largura">Largura</button>
-      <button class="btn" id="resetZoomBtn" title="Resetar zoom">100%</button>
+      <button class="btn" id="zoomInBtn">+</button>
+      <button class="btn" id="fitWidthBtn">Largura</button>
+      <button class="btn" id="resetZoomBtn">100%</button>
     </div>
 
-    <div class="toolbar-separator"></div>
+    <div class="sep"></div>
 
     <div class="toolbar-group">
-      <input
-        class="input"
-        id="searchInput"
-        type="text"
-        placeholder="Buscar no PDF"
-      />
-      <button class="btn" id="searchPrevBtn" title="Resultado anterior">↑</button>
-      <button class="btn" id="searchNextBtn" title="Próximo resultado">↓</button>
+      <input class="input" id="searchInput" type="text" placeholder="Buscar no PDF" />
+      <button class="btn" id="searchPrevBtn">↑</button>
+      <button class="btn" id="searchNextBtn">↓</button>
       <span class="status" id="searchInfo">0/0</span>
     </div>
 
-    <div class="toolbar-separator"></div>
+    <div class="sep"></div>
 
     <div class="toolbar-group">
-      <input
-        class="page-input"
-        id="pageInput"
-        type="number"
-        min="1"
-        value="1"
-        title="Ir para página"
-      />
-      <button class="btn" id="goPageBtn" title="Ir para página">Ir</button>
-      <button class="btn" id="openBtn" title="Abrir PDF em nova aba">Abrir PDF</button>
+      <input class="page-input" id="pageInput" type="number" min="1" value="1" />
+      <button class="btn" id="goPageBtn">Ir</button>
+      <button class="btn" id="openBtn">Abrir PDF</button>
     </div>
   </div>
 
@@ -313,36 +252,22 @@
       <div class="viewer-center">
         <div class="page-stage" id="pageStage">
           <canvas id="pdfCanvas"></canvas>
-          <div id="textLayer"></div>
           <div id="highlightLayer"></div>
         </div>
       </div>
 
-      <div class="loading" id="loadingState">
-        <div class="message-card">
+      <div class="overlay" id="loadingState">
+        <div class="card">
           <div class="spinner"></div>
-          <div class="message-title">Carregando PDF</div>
-          <div class="message-text" id="loadingText">
-            Aguarde enquanto o documento está sendo preparado.
-          </div>
+          <div class="title">Carregando PDF</div>
+          <div class="text" id="loadingText">Aguarde enquanto o documento está sendo preparado.</div>
         </div>
       </div>
 
-      <div class="error hidden" id="errorState">
-        <div class="message-card">
-          <div class="message-title">Não foi possível abrir o PDF</div>
-          <div class="message-text" id="errorText">
-            Verifique se a URL está pública e acessível.
-          </div>
-        </div>
-      </div>
-
-      <div class="empty hidden" id="emptyState">
-        <div class="message-card">
-          <div class="message-title">Nenhum PDF informado</div>
-          <div class="message-text">
-            Abra esta página usando o parâmetro <strong>?file=URL_DO_PDF</strong>.
-          </div>
+      <div class="overlay hidden" id="errorState">
+        <div class="card">
+          <div class="title">Não foi possível abrir o PDF</div>
+          <div class="text" id="errorText"></div>
         </div>
       </div>
     </div>
@@ -358,23 +283,20 @@
       currentPage: 1,
       totalPages: 0,
       scale: 1,
-      currentViewport: null,
       fileUrl: '',
+      currentViewport: null,
+      lastTextItems: [],
       matches: [],
       activeMatchIndex: -1,
-      searchQuery: '',
-      lastTextItems: [],
-      isRendering: false,
-      pendingPage: null
+      searchQuery: ''
     };
 
     const el = {
       canvas: document.getElementById('pdfCanvas'),
       ctx: document.getElementById('pdfCanvas').getContext('2d'),
-      textLayer: document.getElementById('textLayer'),
-      highlightLayer: document.getElementById('highlightLayer'),
       viewerWrap: document.getElementById('viewerWrap'),
       pageStage: document.getElementById('pageStage'),
+      highlightLayer: document.getElementById('highlightLayer'),
       pageInfo: document.getElementById('pageInfo'),
       zoomInfo: document.getElementById('zoomInfo'),
       searchInfo: document.getElementById('searchInfo'),
@@ -393,41 +315,30 @@
       loadingState: document.getElementById('loadingState'),
       loadingText: document.getElementById('loadingText'),
       errorState: document.getElementById('errorState'),
-      errorText: document.getElementById('errorText'),
-      emptyState: document.getElementById('emptyState')
+      errorText: document.getElementById('errorText')
     };
 
-    function setLoading(show, text = 'Aguarde enquanto o documento está sendo preparado.') {
+    function setLoading(show, text = '') {
       el.loadingText.textContent = text;
       el.loadingState.classList.toggle('hidden', !show);
     }
 
-    function setError(show, text = 'Erro desconhecido.') {
+    function setError(show, text = '') {
       el.errorText.textContent = text;
       el.errorState.classList.toggle('hidden', !show);
-    }
-
-    function setEmpty(show) {
-      el.emptyState.classList.toggle('hidden', !show);
     }
 
     function updateToolbar() {
       el.pageInfo.textContent = `${state.currentPage} / ${state.totalPages || 1}`;
       el.zoomInfo.textContent = `${Math.round(state.scale * 100)}%`;
       el.pageInput.value = state.currentPage;
-
       el.prevBtn.disabled = state.currentPage <= 1;
       el.nextBtn.disabled = state.currentPage >= state.totalPages;
-      el.zoomOutBtn.disabled = state.scale <= 0.5;
-      el.zoomInBtn.disabled = state.scale >= 3;
       el.searchPrevBtn.disabled = state.matches.length === 0;
       el.searchNextBtn.disabled = state.matches.length === 0;
-
-      if (state.matches.length === 0) {
-        el.searchInfo.textContent = '0/0';
-      } else {
-        el.searchInfo.textContent = `${state.activeMatchIndex + 1}/${state.matches.length}`;
-      }
+      el.searchInfo.textContent = state.matches.length
+        ? `${state.activeMatchIndex + 1}/${state.matches.length}`
+        : '0/0';
     }
 
     function clearHighlights() {
@@ -437,7 +348,7 @@
       updateToolbar();
     }
 
-    function setCanvasSize(viewport) {
+    function applyCanvasSize(viewport) {
       el.canvas.width = Math.floor(viewport.width);
       el.canvas.height = Math.floor(viewport.height);
       el.canvas.style.width = `${viewport.width}px`;
@@ -445,37 +356,41 @@
 
       el.pageStage.style.width = `${viewport.width}px`;
       el.pageStage.style.height = `${viewport.height}px`;
-
-      el.textLayer.style.width = `${viewport.width}px`;
-      el.textLayer.style.height = `${viewport.height}px`;
-
       el.highlightLayer.style.width = `${viewport.width}px`;
       el.highlightLayer.style.height = `${viewport.height}px`;
     }
 
     async function loadPdf() {
-      const params = new URLSearchParams(window.location.search);
-      const rawFile = params.get('file');
-
-      if (!rawFile) {
-        setLoading(false);
-        setEmpty(true);
-        setError(false);
-        return;
-      }
-
-      setEmpty(false);
-      setError(false);
-      setLoading(true, 'Carregando documento PDF...');
-
       try {
+        const params = new URLSearchParams(window.location.search);
+        const rawFile = params.get('file');
+
+        if (!rawFile) {
+          throw new Error('Parâmetro "file" não informado.');
+        }
+
         state.fileUrl = decodeURIComponent(rawFile);
 
-        const loadingTask = pdfjsLib.getDocument({
-          url: state.fileUrl,
-          withCredentials: false
+        setLoading(true, 'Baixando e renderizando o documento...');
+        setError(false);
+
+        const response = await fetch(state.fileUrl, {
+          method: 'GET',
+          mode: 'cors'
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ao baixar PDF.`);
+        }
+
+        const buffer = await response.arrayBuffer();
+
+        if (!buffer || buffer.byteLength === 0) {
+          throw new Error('O arquivo retornou vazio.');
+        }
+
+        const uint8 = new Uint8Array(buffer);
+        const loadingTask = pdfjsLib.getDocument({ data: uint8 });
         state.pdfDoc = await loadingTask.promise;
         state.totalPages = state.pdfDoc.numPages;
         state.currentPage = 1;
@@ -483,11 +398,11 @@
         await renderPage(1);
         setLoading(false);
       } catch (error) {
-        console.error('Erro ao carregar PDF:', error);
+        console.error(error);
         setLoading(false);
         setError(
           true,
-          `Falha ao abrir o PDF. Verifique se a URL está pública, se o arquivo existe e se o servidor permite acesso externo. Detalhe: ${error.message || error}`
+          `Erro ao carregar o PDF. Verifique se o link do Supabase está válido, ainda não expirou e permite acesso via navegador. Detalhe: ${error.message || error}`
         );
       }
     }
@@ -495,87 +410,58 @@
     async function renderPage(pageNumber) {
       if (!state.pdfDoc) return;
 
-      if (state.isRendering) {
-        state.pendingPage = pageNumber;
-        return;
+      const page = await state.pdfDoc.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: state.scale });
+      state.currentViewport = viewport;
+
+      applyCanvasSize(viewport);
+      clearHighlights();
+
+      await page.render({
+        canvasContext: el.ctx,
+        viewport
+      }).promise;
+
+      state.currentPage = pageNumber;
+      state.lastTextItems = (await page.getTextContent()).items || [];
+
+      if (state.searchQuery.trim()) {
+        renderSearchHighlights();
       }
 
-      state.isRendering = true;
-
-      try {
-        const page = await state.pdfDoc.getPage(pageNumber);
-        const viewport = page.getViewport({ scale: state.scale });
-        state.currentViewport = viewport;
-
-        setCanvasSize(viewport);
-        clearHighlights();
-
-        await page.render({
-          canvasContext: el.ctx,
-          viewport
-        }).promise;
-
-        state.currentPage = pageNumber;
-        state.lastTextItems = (await page.getTextContent()).items || [];
-
-        if (state.searchQuery.trim()) {
-          renderSearchHighlights();
-        }
-
-        updateToolbar();
-      } catch (error) {
-        console.error('Erro ao renderizar página:', error);
-        setError(true, `Erro ao renderizar a página ${pageNumber}. ${error.message || error}`);
-      } finally {
-        state.isRendering = false;
-
-        if (state.pendingPage !== null) {
-          const nextPage = state.pendingPage;
-          state.pendingPage = null;
-          renderPage(nextPage);
-        }
-      }
+      updateToolbar();
     }
 
     function renderSearchHighlights() {
       clearHighlights();
 
-      const query = state.searchQuery.trim().toLowerCase();
-      if (!query || !state.lastTextItems.length || !state.currentViewport) {
-        return;
-      }
+      const q = state.searchQuery.trim().toLowerCase();
+      if (!q || !state.currentViewport || !state.lastTextItems.length) return;
 
       state.lastTextItems.forEach((item) => {
         const text = String(item.str || '');
-        if (!text.toLowerCase().includes(query)) return;
+        if (!text.toLowerCase().includes(q)) return;
 
         const tx = pdfjsLib.Util.transform(
           state.currentViewport.transform,
           item.transform
         );
 
-        const fontHeight = Math.sqrt(tx[2] * tx[2] + tx[3] * tx[3]);
         const width = item.width * state.scale;
-        const height = fontHeight;
-
+        const height = Math.abs(item.height * state.scale) || 16;
         const left = tx[4];
         const top = tx[5] - height;
 
-        state.matches.push({
-          left,
-          top,
-          width,
-          height
-        });
+        state.matches.push({ left, top, width, height });
       });
 
-      state.matches.forEach((match, index) => {
+      state.matches.forEach((m, index) => {
         const box = document.createElement('div');
         box.className = `highlight-box ${index === 0 ? 'active' : ''}`;
-        box.style.left = `${match.left}px`;
-        box.style.top = `${match.top}px`;
-        box.style.width = `${match.width}px`;
-        box.style.height = `${match.height}px`;
+        box.style.left = `${m.left}px`;
+        box.style.top = `${m.top}px`;
+        box.style.width = `${m.width}px`;
+        box.style.height = `${m.height}px`;
         el.highlightLayer.appendChild(box);
       });
 
@@ -593,12 +479,7 @@
         node.classList.toggle('active', index === state.activeMatchIndex);
       });
 
-      if (
-        state.activeMatchIndex < 0 ||
-        state.activeMatchIndex >= state.matches.length
-      ) {
-        return;
-      }
+      if (state.activeMatchIndex < 0 || state.activeMatchIndex >= state.matches.length) return;
 
       const match = state.matches[state.activeMatchIndex];
       el.viewerWrap.scrollTo({
@@ -610,17 +491,8 @@
       updateToolbar();
     }
 
-    function goToPage(pageNumber) {
-      if (!state.pdfDoc) return;
-      const page = Number(pageNumber);
-      if (!Number.isFinite(page)) return;
-      if (page < 1 || page > state.totalPages) return;
-      renderPage(page);
-    }
-
     function setZoom(nextZoom) {
-      const zoom = Math.max(0.5, Math.min(3, nextZoom));
-      state.scale = zoom;
+      state.scale = Math.max(0.5, Math.min(3, nextZoom));
       renderPage(state.currentPage);
     }
 
@@ -628,88 +500,63 @@
       if (!state.pdfDoc) return;
 
       state.pdfDoc.getPage(state.currentPage).then((page) => {
-        const unscaledViewport = page.getViewport({ scale: 1 });
-        const availableWidth = el.viewerWrap.clientWidth - 36;
-        const computedScale = availableWidth / unscaledViewport.width;
-        state.scale = Math.max(0.5, Math.min(3, computedScale));
+        const viewport = page.getViewport({ scale: 1 });
+        const availableWidth = el.viewerWrap.clientWidth - 40;
+        const nextScale = availableWidth / viewport.width;
+        state.scale = Math.max(0.5, Math.min(3, nextScale));
         renderPage(state.currentPage);
-      }).catch((error) => {
-        console.error('Erro no ajuste de largura:', error);
       });
     }
 
-    function bindEvents() {
-      el.prevBtn.addEventListener('click', () => {
-        if (state.currentPage > 1) {
-          renderPage(state.currentPage - 1);
-        }
-      });
-
-      el.nextBtn.addEventListener('click', () => {
-        if (state.currentPage < state.totalPages) {
-          renderPage(state.currentPage + 1);
-        }
-      });
-
-      el.zoomOutBtn.addEventListener('click', () => {
-        setZoom(state.scale - 0.1);
-      });
-
-      el.zoomInBtn.addEventListener('click', () => {
-        setZoom(state.scale + 0.1);
-      });
-
-      el.resetZoomBtn.addEventListener('click', () => {
-        setZoom(1);
-      });
-
-      el.fitWidthBtn.addEventListener('click', () => {
-        fitToWidth();
-      });
-
-      el.searchInput.addEventListener('input', (event) => {
-        state.searchQuery = event.target.value || '';
-        renderSearchHighlights();
-      });
-
-      el.searchNextBtn.addEventListener('click', () => {
-        if (!state.matches.length) return;
-        state.activeMatchIndex =
-          (state.activeMatchIndex + 1) % state.matches.length;
-        scrollToActiveMatch();
-      });
-
-      el.searchPrevBtn.addEventListener('click', () => {
-        if (!state.matches.length) return;
-        state.activeMatchIndex =
-          (state.activeMatchIndex - 1 + state.matches.length) % state.matches.length;
-        scrollToActiveMatch();
-      });
-
-      el.goPageBtn.addEventListener('click', () => {
-        goToPage(el.pageInput.value);
-      });
-
-      el.pageInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          goToPage(el.pageInput.value);
-        }
-      });
-
-      el.openBtn.addEventListener('click', () => {
-        if (state.fileUrl) {
-          window.open(state.fileUrl, '_blank', 'noopener,noreferrer');
-        }
-      });
-
-      window.addEventListener('resize', () => {
-        if (state.pdfDoc && state.currentViewport) {
-          updateToolbar();
-        }
-      });
+    function goToPage(value) {
+      const page = Number(value);
+      if (!Number.isFinite(page)) return;
+      if (page < 1 || page > state.totalPages) return;
+      renderPage(page);
     }
 
-    bindEvents();
+    el.prevBtn.addEventListener('click', () => {
+      if (state.currentPage > 1) renderPage(state.currentPage - 1);
+    });
+
+    el.nextBtn.addEventListener('click', () => {
+      if (state.currentPage < state.totalPages) renderPage(state.currentPage + 1);
+    });
+
+    el.zoomOutBtn.addEventListener('click', () => setZoom(state.scale - 0.1));
+    el.zoomInBtn.addEventListener('click', () => setZoom(state.scale + 0.1));
+    el.resetZoomBtn.addEventListener('click', () => setZoom(1));
+    el.fitWidthBtn.addEventListener('click', fitToWidth);
+
+    el.searchInput.addEventListener('input', (e) => {
+      state.searchQuery = e.target.value || '';
+      renderSearchHighlights();
+    });
+
+    el.searchNextBtn.addEventListener('click', () => {
+      if (!state.matches.length) return;
+      state.activeMatchIndex = (state.activeMatchIndex + 1) % state.matches.length;
+      scrollToActiveMatch();
+    });
+
+    el.searchPrevBtn.addEventListener('click', () => {
+      if (!state.matches.length) return;
+      state.activeMatchIndex =
+        (state.activeMatchIndex - 1 + state.matches.length) % state.matches.length;
+      scrollToActiveMatch();
+    });
+
+    el.goPageBtn.addEventListener('click', () => goToPage(el.pageInput.value));
+    el.pageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') goToPage(el.pageInput.value);
+    });
+
+    el.openBtn.addEventListener('click', () => {
+      if (state.fileUrl) {
+        window.open(state.fileUrl, '_blank', 'noopener,noreferrer');
+      }
+    });
+
     updateToolbar();
     loadPdf();
   </script>
